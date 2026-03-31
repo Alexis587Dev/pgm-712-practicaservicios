@@ -5,6 +5,7 @@ import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,15 +23,17 @@ public class ExternalServiceController {
   private final RestClient restClient;
 
   public ExternalServiceController(RestClient.Builder restClient) {
-    this.restClient = restClient.baseUrl("https://stephen-king-api.onrender.com/api/books").build();
+    this.restClient = restClient.baseUrl("https://stephen-king-api.onrender.com/api/book").build();
   }
 
   @GetMapping("/books/{id}")
-  public String getBooks(@RequestBody BookRequestDTO bookRequestDTO) {
+  public Object getBooks(@PathVariable Integer id) {
 
-    return restClient.get()
-        .uri("/{id}", bookRequestDTO.getId())
+    Map<String, Object> response = restClient.get()
+        .uri("/{id}", id)
         .retrieve()
-        .body(String.class);
+        .body(Map.class);
+
+    return response.get("data");
   }
 }
